@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://blissful-freedom-production-1333.up.railway.app/api",
 });
 
 api.interceptors.request.use((config) => {
