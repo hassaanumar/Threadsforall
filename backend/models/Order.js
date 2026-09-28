@@ -37,7 +37,7 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
-    safepayTracker: { type: String },
+   
     status: {
       type: String,
       enum: ["placed", "confirmed", "packed", "shipped", "delivered", "cancelled"],

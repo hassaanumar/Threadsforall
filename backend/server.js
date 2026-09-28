@@ -10,10 +10,6 @@ import {
   errorHandler,
 } from "./middleware/errorHandler.js";
 
-import {
-  safepayWebhook,
-} from "./controllers/orderController.js";
-
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -41,28 +37,6 @@ app.use(
 );
 
 // =========================================
-// SAFEPAY WEBHOOK
-// =========================================
-//
-// IMPORTANT:
-//
-// This MUST be before:
-//
-// app.use(express.json());
-//
-// Safepay needs the raw request body
-// for webhook verification.
-// =========================================
-
-app.post(
-  "/api/orders/safepay-webhook",
-  express.raw({
-    type: "application/json",
-  }),
-  safepayWebhook
-);
-
-// =========================================
 // NORMAL JSON BODY
 // =========================================
 
@@ -72,11 +46,14 @@ app.use(express.json());
 // HEALTH CHECK
 // =========================================
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-  });
-});
+app.get(
+  "/api/health",
+  (req, res) => {
+    res.json({
+      status: "ok",
+    });
+  }
+);
 
 // =========================================
 // ROUTES
@@ -90,6 +67,11 @@ app.use(
 app.use(
   "/api/products",
   productRoutes
+);
+
+app.use(
+  "/api/products/import",
+  productImportRoutes
 );
 
 app.use(
@@ -128,14 +110,5 @@ app.listen(
     console.log(
       `Threads API running on port ${PORT}`
     );
-
-    console.log(
-      "Safepay webhook:",
-      `http://localhost:${PORT}/api/orders/safepay-webhook`
-    );
   }
-);
-app.use(
-  "/api/products/import",
-  productImportRoutes
 );

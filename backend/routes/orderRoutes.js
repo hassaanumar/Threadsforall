@@ -2,7 +2,6 @@ import express from "express";
 
 import {
   createCodOrder,
-  createSafepayPayment,
   getOrderByNumber,
   getOrders,
   updateOrderStatus,
@@ -22,15 +21,6 @@ const router =
 router.post(
   "/cod",
   createCodOrder
-);
-
-// =========================================
-// SAFEPAY PAYMENT
-// =========================================
-
-router.post(
-  "/create-payment",
-  createSafepayPayment
 );
 
 // =========================================
@@ -63,3 +53,4 @@ router.put(
 );
 
 export default router;
+
