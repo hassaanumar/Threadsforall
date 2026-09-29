@@ -1,6 +1,9 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import api from "../../api/axios";
+
+const router = useRouter();
 
 const reviews = ref([]);
 const loading = ref(true);
@@ -172,6 +175,12 @@ const addReview = async () => {
   }
 };
 
+const goToDashboard = () => {
+  router.push({
+    name: "admin-dashboard",
+  });
+};
+
 const formatDate = (date) => {
   if (!date) {
     return "";
@@ -195,31 +204,64 @@ onMounted(() => {
 <template>
   <div class="reviews-page">
 
-    <!-- PAGE HEADER -->
+    <!-- =========================================
+         PAGE HEADER
+         ========================================= -->
 
     <header class="page-header">
 
-      <div>
-        <p class="eyebrow">
-          Customer feedback
-        </p>
+      <div class="header-main">
 
-        <h1>Reviews</h1>
+        <button
+          type="button"
+          class="back-button"
+          @click="goToDashboard"
+        >
+          <span class="back-arrow">
+            ←
+          </span>
 
-        <p class="page-description">
-          Review customer feedback before it appears
-          on the Threads website.
-        </p>
+          <span>
+            Back to Dashboard
+          </span>
+        </button>
+
+        <div class="heading-content">
+
+          <div class="heading-label">
+            <span class="heading-line"></span>
+
+            <p class="eyebrow">
+              Customer Feedback
+            </p>
+          </div>
+
+          <h1>
+            Reviews
+          </h1>
+
+          <p class="page-description">
+            Review customer feedback before it appears
+            on the Threads website.
+          </p>
+
+        </div>
+
       </div>
+
 
       <div class="header-actions">
 
         <button
           type="button"
-          class="btn"
+          class="btn btn-secondary"
           :disabled="loading"
           @click="fetchReviews"
         >
+          <span class="button-icon">
+            ↻
+          </span>
+
           {{ loading ? "Refreshing…" : "Refresh" }}
         </button>
 
@@ -228,6 +270,10 @@ onMounted(() => {
           class="btn btn-primary"
           @click="openAddForm"
         >
+          <span class="button-icon">
+            +
+          </span>
+
           Add review
         </button>
 
@@ -236,70 +282,230 @@ onMounted(() => {
     </header>
 
 
-    <!-- ERROR -->
+    <!-- =========================================
+         SUMMARY
+         ========================================= -->
+
+    <section class="review-summary">
+
+      <div class="summary-card">
+
+        <div class="summary-icon pending-icon">
+          !
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Pending
+          </span>
+
+          <strong>
+            {{ pendingCount }}
+          </strong>
+
+          <span class="summary-description">
+            Waiting for approval
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon approved-icon">
+          ✓
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Approved
+          </span>
+
+          <strong>
+            {{ approvedCount }}
+          </strong>
+
+          <span class="summary-description">
+            Visible on website
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon hidden-icon">
+          —
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Hidden
+          </span>
+
+          <strong>
+            {{ hiddenCount }}
+          </strong>
+
+          <span class="summary-description">
+            Not visible publicly
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon total-icon">
+          #
+        </div>
+
+        <div class="summary-content">
+
+          <span class="summary-label">
+            Total Reviews
+          </span>
+
+          <strong>
+            {{ reviews.length }}
+          </strong>
+
+          <span class="summary-description">
+            All customer feedback
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         ERROR
+         ========================================= -->
 
     <div
       v-if="error"
       class="error-message"
     >
-      {{ error }}
+
+      <div class="error-icon">
+        !
+      </div>
+
+      <div>
+        <strong>
+          Something went wrong
+        </strong>
+
+        <p>
+          {{ error }}
+        </p>
+      </div>
+
     </div>
 
 
-    <!-- FILTERS -->
+    <!-- =========================================
+         FILTERS
+         ========================================= -->
 
     <section class="review-toolbar">
+
+      <div class="toolbar-heading">
+
+        <div>
+          <span class="toolbar-label">
+            Manage feedback
+          </span>
+
+          <h2>
+            Customer reviews
+          </h2>
+        </div>
+
+      </div>
+
 
       <div class="filters">
 
         <button
           type="button"
           class="filter"
-          :class="{ active: activeFilter === 'pending' }"
+          :class="{
+            active: activeFilter === 'pending'
+          }"
           @click="activeFilter = 'pending'"
         >
-          Pending
+          <span class="filter-name">
+            Pending
+          </span>
 
-          <span>
+          <span class="filter-count">
             {{ pendingCount }}
           </span>
         </button>
 
+
         <button
           type="button"
           class="filter"
-          :class="{ active: activeFilter === 'approved' }"
+          :class="{
+            active: activeFilter === 'approved'
+          }"
           @click="activeFilter = 'approved'"
         >
-          Approved
+          <span class="filter-name">
+            Approved
+          </span>
 
-          <span>
+          <span class="filter-count">
             {{ approvedCount }}
           </span>
         </button>
 
+
         <button
           type="button"
           class="filter"
-          :class="{ active: activeFilter === 'hidden' }"
+          :class="{
+            active: activeFilter === 'hidden'
+          }"
           @click="activeFilter = 'hidden'"
         >
-          Hidden
+          <span class="filter-name">
+            Hidden
+          </span>
 
-          <span>
+          <span class="filter-count">
             {{ hiddenCount }}
           </span>
         </button>
 
+
         <button
           type="button"
           class="filter"
-          :class="{ active: activeFilter === 'all' }"
+          :class="{
+            active: activeFilter === 'all'
+          }"
           @click="activeFilter = 'all'"
         >
-          All
+          <span class="filter-name">
+            All reviews
+          </span>
 
-          <span>
+          <span class="filter-count">
             {{ reviews.length }}
           </span>
         </button>
@@ -309,7 +515,9 @@ onMounted(() => {
     </section>
 
 
-    <!-- ADD REVIEW -->
+    <!-- =========================================
+         ADD REVIEW
+         ========================================= -->
 
     <section
       v-if="showAddForm"
@@ -319,12 +527,21 @@ onMounted(() => {
       <div class="form-heading">
 
         <div>
-          <p class="section-kicker">
+
+          <div class="section-kicker">
             Manual review
+          </div>
+
+          <h2>
+            Add a customer review
+          </h2>
+
+          <p>
+            Add feedback manually to your review collection.
           </p>
 
-          <h2>Add a customer review</h2>
         </div>
+
 
         <button
           type="button"
@@ -345,7 +562,9 @@ onMounted(() => {
         <div class="form-grid">
 
           <label>
-            <span>Name</span>
+            <span>
+              Name
+            </span>
 
             <input
               v-model="form.name"
@@ -358,7 +577,9 @@ onMounted(() => {
 
 
           <label>
-            <span>City</span>
+            <span>
+              City
+            </span>
 
             <input
               v-model="form.city"
@@ -372,9 +593,12 @@ onMounted(() => {
 
 
         <label>
-          <span>Rating</span>
+          <span>
+            Rating
+          </span>
 
           <select v-model="form.rating">
+
             <option :value="5">
               5 stars
             </option>
@@ -394,12 +618,16 @@ onMounted(() => {
             <option :value="1">
               1 star
             </option>
+
           </select>
+
         </label>
 
 
         <label>
-          <span>Review</span>
+          <span>
+            Review
+          </span>
 
           <textarea
             v-model="form.comment"
@@ -408,6 +636,11 @@ onMounted(() => {
             rows="5"
             required
           ></textarea>
+
+          <small>
+            {{ form.comment.length }}/500
+          </small>
+
         </label>
 
 
@@ -415,7 +648,7 @@ onMounted(() => {
 
           <button
             type="button"
-            class="btn"
+            class="btn btn-secondary"
             @click="closeAddForm"
           >
             Cancel
@@ -436,17 +669,31 @@ onMounted(() => {
     </section>
 
 
-    <!-- LOADING -->
+    <!-- =========================================
+         LOADING
+         ========================================= -->
 
     <section
       v-if="loading"
-      class="empty-state"
+      class="empty-state panel"
     >
-      <p>Loading reviews…</p>
+
+      <div class="loading-spinner"></div>
+
+      <h2>
+        Loading reviews
+      </h2>
+
+      <p>
+        We're getting the latest customer feedback.
+      </p>
+
     </section>
 
 
-    <!-- EMPTY -->
+    <!-- =========================================
+         EMPTY
+         ========================================= -->
 
     <section
       v-else-if="!filteredReviews.length"
@@ -459,8 +706,10 @@ onMounted(() => {
 
       <h2>
         No
-        <em>{{ activeFilter }}</em>
-        reviews.
+        <em>
+          {{ activeFilter }}
+        </em>
+        reviews
       </h2>
 
       <p>
@@ -479,7 +728,9 @@ onMounted(() => {
     </section>
 
 
-    <!-- REVIEWS -->
+    <!-- =========================================
+         REVIEWS
+         ========================================= -->
 
     <section
       v-else
@@ -494,33 +745,41 @@ onMounted(() => {
 
         <div class="review-card-top">
 
-          <div>
+          <div class="review-author">
 
-            <div class="review-stars">
-
-              <span
-                v-for="star in 5"
-                :key="star"
-                :class="{
-                  filled:
-                    star <= Number(review.rating)
-                }"
-              >
-                ★
-              </span>
-
+            <div class="avatar">
+              {{ review.name?.charAt(0)?.toUpperCase() }}
             </div>
 
-            <h3>
-              {{ review.name }}
-            </h3>
+            <div>
 
-            <p
-              v-if="review.city"
-              class="review-city"
-            >
-              {{ review.city }}
-            </p>
+              <div class="review-stars">
+
+                <span
+                  v-for="star in 5"
+                  :key="star"
+                  :class="{
+                    filled:
+                      star <= Number(review.rating)
+                  }"
+                >
+                  ★
+                </span>
+
+              </div>
+
+              <h3>
+                {{ review.name }}
+              </h3>
+
+              <p
+                v-if="review.city"
+                class="review-city"
+              >
+                {{ review.city }}
+              </p>
+
+            </div>
 
           </div>
 
@@ -531,6 +790,8 @@ onMounted(() => {
               class="status"
               :class="`status-${review.status}`"
             >
+              <span class="status-dot"></span>
+
               {{ review.status }}
             </span>
 
@@ -543,9 +804,17 @@ onMounted(() => {
         </div>
 
 
-        <blockquote>
-          “{{ review.comment }}”
-        </blockquote>
+        <div class="review-content">
+
+          <span class="quote-mark">
+            “
+          </span>
+
+          <blockquote>
+            {{ review.comment }}
+          </blockquote>
+
+        </div>
 
 
         <div class="review-actions">
@@ -553,29 +822,33 @@ onMounted(() => {
           <button
             v-if="review.status !== 'approved'"
             type="button"
-            class="btn btn-primary"
+            class="btn btn-primary action-button"
             @click="updateStatus(review, 'approved')"
           >
+            ✓
             Approve
           </button>
+
 
           <button
             v-if="review.status !== 'hidden'"
             type="button"
-            class="btn"
+            class="btn btn-secondary action-button"
             @click="updateStatus(review, 'hidden')"
           >
             Hide
           </button>
 
+
           <button
             v-if="review.status !== 'pending'"
             type="button"
-            class="btn"
+            class="btn btn-secondary action-button"
             @click="updateStatus(review, 'pending')"
           >
             Move to pending
           </button>
+
 
           <button
             type="button"
@@ -594,16 +867,23 @@ onMounted(() => {
   </div>
 </template>
 
+
 <style scoped>
 
+/* =========================================
+   PAGE
+   ========================================= */
+
 .reviews-page {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1180px;
+
   margin: 0 auto;
 }
 
 
 /* =========================================
-   HEADER
+   PAGE HEADER
    ========================================= */
 
 .page-header {
@@ -614,10 +894,78 @@ onMounted(() => {
   gap: 40px;
 
   margin-bottom: 42px;
+
+  padding-bottom: 32px;
+
+  border-bottom: 1px solid var(--color-line);
+}
+
+.header-main {
+  min-width: 0;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 28px;
+
+  padding: 8px 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: var(--color-ink-soft);
+
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.back-button:hover {
+  color: var(--color-accent);
+
+  transform: translateX(-3px);
+}
+
+.back-arrow {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.heading-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.heading-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 12px;
+}
+
+.heading-line {
+  width: 28px;
+  height: 1px;
+
+  background: var(--color-accent);
 }
 
 .eyebrow {
-  margin-bottom: 10px;
+  margin: 0;
 
   color: var(--color-accent);
 
@@ -629,23 +977,23 @@ onMounted(() => {
 }
 
 .page-header h1 {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 
   font-size: clamp(3rem, 6vw, 5rem);
 
-  letter-spacing: -0.045em;
-  line-height: 0.95;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
 }
 
 .page-description {
-  max-width: 520px;
+  max-width: 540px;
 
   margin: 0;
 
   color: var(--color-ink-soft);
 
   font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .header-actions {
@@ -658,21 +1006,235 @@ onMounted(() => {
 
 
 /* =========================================
+   BUTTONS
+   ========================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-height: 42px;
+
+  padding: 0 17px;
+
+  border: 1px solid var(--color-line);
+
+  background: var(--color-paper);
+
+  color: var(--color-ink);
+
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+
+  cursor: pointer;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  border-color: var(--color-ink);
+
+  background: var(--color-ink);
+
+  color: var(--color-paper);
+}
+
+.btn-primary:hover:not(:disabled) {
+  border-color: var(--color-accent);
+
+  background: var(--color-accent);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-ink);
+
+  background: var(--color-paper-alt);
+}
+
+.button-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+
+/* =========================================
+   SUMMARY
+   ========================================= */
+
+.review-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-bottom: 38px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  min-height: 105px;
+
+  padding: 18px;
+
+  border: 1px solid var(--color-line);
+
+  background: var(--color-paper-alt);
+}
+
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pending-icon {
+  background: rgba(180, 130, 40, 0.12);
+
+  color: #96701f;
+}
+
+.approved-icon {
+  background: rgba(60, 120, 75, 0.12);
+
+  color: #477653;
+}
+
+.hidden-icon {
+  background: rgba(100, 100, 100, 0.1);
+
+  color: var(--color-ink-soft);
+}
+
+.total-icon {
+  background: var(--color-ink);
+
+  color: var(--color-paper);
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.summary-label {
+  margin-bottom: 2px;
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.62rem;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.summary-content strong {
+  margin-bottom: 2px;
+
+  font-family: var(--font-display);
+
+  font-size: 1.65rem;
+
+  font-weight: 500;
+
+  line-height: 1;
+}
+
+.summary-description {
+  color: var(--color-ink-soft);
+
+  font-size: 0.62rem;
+}
+
+
+/* =========================================
    ERROR
    ========================================= */
 
 .error-message {
-  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
 
-  padding: 14px 18px;
+  gap: 12px;
+
+  margin-bottom: 28px;
+
+  padding: 15px 18px;
 
   border: 1px solid rgba(150, 50, 50, 0.25);
 
   background: rgba(150, 50, 50, 0.05);
 
   color: var(--color-error);
+}
 
-  font-size: 0.8rem;
+.error-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  border: 1px solid currentColor;
+
+  border-radius: 50%;
+
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.error-message strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 0.72rem;
+}
+
+.error-message p {
+  margin: 0;
+
+  font-size: 0.72rem;
+
+  line-height: 1.5;
 }
 
 
@@ -681,19 +1243,61 @@ onMounted(() => {
    ========================================= */
 
 .review-toolbar {
-  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  margin-bottom: 20px;
 
   border-bottom: 1px solid var(--color-line);
+}
+
+.toolbar-heading {
+  padding-bottom: 18px;
+}
+
+.toolbar-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--color-accent);
+
+  font-size: 0.62rem;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.toolbar-heading h2 {
+  margin: 0;
+
+  font-family: var(--font-display);
+
+  font-size: 1.5rem;
+
+  font-weight: 500;
+
+  letter-spacing: -0.025em;
 }
 
 .filters {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .filter {
-  padding: 12px 14px;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 13px 12px;
 
   border: 0;
   border-bottom: 2px solid transparent;
@@ -703,26 +1307,53 @@ onMounted(() => {
   color: var(--color-ink-soft);
 
   font-family: var(--font-body);
-  font-size: 0.72rem;
+
+  font-size: 0.65rem;
+  font-weight: 600;
 
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
 
   cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
 }
 
-.filter span {
-  margin-left: 5px;
-
-  color: var(--color-ink-soft);
-
-  opacity: 0.7;
+.filter:hover {
+  color: var(--color-ink);
 }
 
 .filter.active {
   border-bottom-color: var(--color-accent);
 
   color: var(--color-ink);
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 20px;
+  height: 20px;
+
+  padding: 0 5px;
+
+  border-radius: 10px;
+
+  background: var(--color-paper-alt);
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.58rem;
+}
+
+.filter.active .filter-count {
+  background: var(--color-accent);
+
+  color: white;
 }
 
 
@@ -744,7 +1375,7 @@ onMounted(() => {
 .add-review {
   margin-bottom: 28px;
 
-  padding: 28px;
+  padding: 30px;
 }
 
 .form-heading {
@@ -752,7 +1383,9 @@ onMounted(() => {
   align-items: flex-start;
   justify-content: space-between;
 
-  margin-bottom: 28px;
+  gap: 25px;
+
+  margin-bottom: 30px;
 }
 
 .section-kicker {
@@ -760,7 +1393,7 @@ onMounted(() => {
 
   color: var(--color-accent);
 
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 600;
 
   text-transform: uppercase;
@@ -768,16 +1401,34 @@ onMounted(() => {
 }
 
 .form-heading h2 {
+  margin: 0 0 7px;
+
+  font-family: var(--font-display);
+
+  font-size: 1.8rem;
+
+  font-weight: 500;
+
+  letter-spacing: -0.03em;
+}
+
+.form-heading p {
   margin: 0;
 
-  font-size: 1.7rem;
+  color: var(--color-ink-soft);
 
-  letter-spacing: -0.025em;
+  font-size: 0.78rem;
 }
 
 .close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: 34px;
   height: 34px;
+
+  flex-shrink: 0;
 
   border: 1px solid var(--color-line);
   border-radius: 50%;
@@ -789,30 +1440,46 @@ onMounted(() => {
   font-size: 1.3rem;
 
   cursor: pointer;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.close-button:hover {
+  background: var(--color-ink);
+
+  color: var(--color-paper);
 }
 
 .review-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+
+  gap: 20px;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns:
+    1fr 1fr;
+
   gap: 18px;
 }
 
 .review-form label {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
 }
 
-.review-form label span {
+.review-form label > span {
   color: var(--color-ink-soft);
 
-  font-size: 0.68rem;
+  font-size: 0.64rem;
+  font-weight: 600;
 
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -825,7 +1492,7 @@ onMounted(() => {
 
   box-sizing: border-box;
 
-  padding: 12px 13px;
+  padding: 13px 14px;
 
   border: 1px solid var(--color-line);
 
@@ -836,23 +1503,43 @@ onMounted(() => {
   color: var(--color-ink);
 
   font-family: var(--font-body);
-  font-size: 0.82rem;
+
+  font-size: 0.8rem;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .review-form textarea {
+  min-height: 130px;
+
   resize: vertical;
-  min-height: 120px;
 }
 
 .review-form input:focus,
 .review-form select:focus,
 .review-form textarea:focus {
   border-color: var(--color-accent);
+
+  box-shadow:
+    0 0 0 3px rgba(0, 0, 0, 0.03);
+}
+
+.review-form label small {
+  align-self: flex-end;
+
+  margin-top: -3px;
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.62rem;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
+
   gap: 10px;
 
   padding-top: 5px;
@@ -860,7 +1547,7 @@ onMounted(() => {
 
 
 /* =========================================
-   EMPTY
+   EMPTY / LOADING
    ========================================= */
 
 .empty-state {
@@ -881,18 +1568,27 @@ onMounted(() => {
 }
 
 .empty-mark {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
   color: var(--color-accent-soft);
 
   font-family: var(--font-display);
+
   font-size: 4rem;
+
+  line-height: 1;
 }
 
 .empty-state h2 {
-  margin-bottom: 12px;
+  margin: 0 0 10px;
 
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+
+  font-size: 2.2rem;
+
+  font-weight: 500;
+
+  letter-spacing: -0.03em;
 }
 
 .empty-state h2 em {
@@ -902,11 +1598,34 @@ onMounted(() => {
 .empty-state p {
   max-width: 420px;
 
-  margin-bottom: 25px;
+  margin: 0 0 25px;
 
   color: var(--color-ink-soft);
 
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+
+  line-height: 1.6;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+
+  margin-bottom: 20px;
+
+  border: 2px solid var(--color-line);
+
+  border-top-color: var(--color-accent);
+
+  border-radius: 50%;
+
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 
@@ -917,11 +1636,22 @@ onMounted(() => {
 .review-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+
+  gap: 14px;
 }
 
 .review-card {
   padding: 25px;
+
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.review-card:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+
+  transform: translateY(-1px);
 }
 
 .review-card-top {
@@ -929,16 +1659,45 @@ onMounted(() => {
   align-items: flex-start;
   justify-content: space-between;
 
-  gap: 20px;
+  gap: 25px;
 
-  margin-bottom: 25px;
+  margin-bottom: 22px;
+}
+
+.review-author {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 13px;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--color-ink);
+
+  color: var(--color-paper);
+
+  font-family: var(--font-display);
+
+  font-size: 1rem;
 }
 
 .review-stars {
   display: flex;
+
   gap: 3px;
 
-  margin-bottom: 10px;
+  margin-bottom: 7px;
 
   font-size: 0.72rem;
 
@@ -950,9 +1709,12 @@ onMounted(() => {
 }
 
 .review-card h3 {
-  margin: 0 0 4px;
+  margin: 0 0 3px;
 
-  font-size: 1rem;
+  font-family: var(--font-body);
+
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .review-city {
@@ -960,7 +1722,7 @@ onMounted(() => {
 
   color: var(--color-ink-soft);
 
-  font-size: 0.72rem;
+  font-size: 0.68rem;
 }
 
 .review-meta {
@@ -972,62 +1734,128 @@ onMounted(() => {
 }
 
 .status {
-  padding: 5px 8px;
+  display: inline-flex;
+  align-items: center;
 
-  font-size: 0.58rem;
-  font-weight: 600;
+  gap: 6px;
+
+  padding: 5px 9px;
+
+  font-size: 0.56rem;
+  font-weight: 700;
 
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
+.status-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
 .status-pending {
   background: rgba(180, 130, 40, 0.12);
+
   color: #96701f;
 }
 
 .status-approved {
   background: rgba(60, 120, 75, 0.12);
+
   color: #477653;
 }
 
 .status-hidden {
   background: rgba(100, 100, 100, 0.1);
+
   color: var(--color-ink-soft);
 }
 
 .review-date {
   color: var(--color-ink-soft);
 
-  font-size: 0.65rem;
+  font-size: 0.63rem;
 }
 
-.review-card blockquote {
-  max-width: 780px;
 
-  margin: 0 0 25px;
+/* =========================================
+   REVIEW CONTENT
+   ========================================= */
+
+.review-content {
+  position: relative;
+
+  display: flex;
+
+  gap: 15px;
+
+  margin-bottom: 23px;
+
+  padding-left: 5px;
+}
+
+.quote-mark {
+  color: var(--color-accent);
 
   font-family: var(--font-display);
 
-  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-size: 3.5rem;
 
-  line-height: 1.25;
+  line-height: 0.7;
+}
+
+.review-card blockquote {
+  max-width: 820px;
+
+  margin: 0;
+
+  padding-top: 5px;
+
+  color: var(--color-ink);
+
+  font-family: var(--font-display);
+
+  font-size: clamp(1.2rem, 2.3vw, 1.65rem);
+
+  font-weight: 400;
+
+  line-height: 1.35;
 
   letter-spacing: -0.02em;
 }
 
+
+/* =========================================
+   REVIEW ACTIONS
+   ========================================= */
+
 .review-actions {
   display: flex;
   align-items: center;
+
   gap: 8px;
 
-  padding-top: 18px;
+  padding-top: 17px;
 
   border-top: 1px solid var(--color-line);
 }
 
+.action-button {
+  min-height: 36px;
+
+  padding: 0 13px;
+
+  font-size: 0.61rem;
+}
+
 .delete-button {
   margin-left: auto;
+
+  padding: 8px 0;
 
   border: 0;
 
@@ -1037,12 +1865,45 @@ onMounted(() => {
 
   font-family: var(--font-body);
 
-  font-size: 0.68rem;
+  font-size: 0.63rem;
+  font-weight: 600;
 
   text-transform: uppercase;
   letter-spacing: 0.08em;
 
   cursor: pointer;
+
+  transition: opacity 180ms ease;
+}
+
+.delete-button:hover {
+  opacity: 0.7;
+}
+
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 950px) {
+
+  .review-summary {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .page-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 25px;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
 }
 
 
@@ -1052,66 +1913,217 @@ onMounted(() => {
 
 @media (max-width: 700px) {
 
+  .reviews-page {
+    width: 100%;
+  }
+
+
   .page-header {
-    align-items: flex-start;
-
-    flex-direction: column;
-
     gap: 22px;
 
     margin-bottom: 30px;
+
+    padding-bottom: 25px;
   }
+
+
+  .back-button {
+    margin-bottom: 23px;
+  }
+
+
+  .page-header h1 {
+    font-size: 3rem;
+  }
+
+
+  .page-description {
+    font-size: 0.8rem;
+  }
+
 
   .header-actions {
     width: 100%;
   }
 
+
   .header-actions .btn {
     flex: 1;
   }
+
+
+  .review-summary {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+    margin-bottom: 30px;
+  }
+
+
+  .summary-card {
+    min-height: 90px;
+
+    padding: 13px;
+
+    gap: 10px;
+  }
+
+
+  .summary-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+
+  .summary-content strong {
+    font-size: 1.35rem;
+  }
+
+
+  .summary-description {
+    display: none;
+  }
+
+
+  .review-toolbar {
+    display: block;
+
+    margin-bottom: 18px;
+  }
+
+
+  .toolbar-heading {
+    padding-bottom: 12px;
+  }
+
 
   .filters {
     overflow-x: auto;
 
     scrollbar-width: none;
+
+    border-top: 1px solid var(--color-line);
   }
+
 
   .filters::-webkit-scrollbar {
     display: none;
   }
 
+
   .filter {
     flex-shrink: 0;
+
+    padding: 12px 10px;
   }
+
 
   .form-grid {
     grid-template-columns: 1fr;
   }
 
+
   .add-review {
     padding: 20px;
   }
 
+
   .review-card {
-    padding: 20px;
+    padding: 19px;
   }
+
 
   .review-card-top {
     flex-direction: column;
+
+    gap: 17px;
   }
+
 
   .review-meta {
     align-items: flex-start;
   }
 
+
+  .review-content {
+    gap: 8px;
+  }
+
+
+  .quote-mark {
+    font-size: 2.8rem;
+  }
+
+
+  .review-card blockquote {
+    font-size: 1.2rem;
+  }
+
+
   .review-actions {
     flex-wrap: wrap;
   }
 
+
+  .action-button {
+    flex: 1;
+  }
+
+
   .delete-button {
-    margin-left: 0;
     width: 100%;
+
+    margin-left: 0;
+
+    padding-top: 10px;
+
     text-align: left;
+  }
+
+}
+
+
+/* =========================================
+   SMALL MOBILE
+   ========================================= */
+
+@media (max-width: 430px) {
+
+  .review-summary {
+    grid-template-columns: 1fr;
+  }
+
+
+  .summary-card {
+    min-height: 76px;
+  }
+
+
+  .summary-description {
+    display: block;
+  }
+
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+
+  .header-actions .btn {
+    width: 100%;
+  }
+
+
+  .review-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .action-button {
+    width: 100%;
   }
 
 }
