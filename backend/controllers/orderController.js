@@ -280,12 +280,26 @@ export const createCodOrder =
         );
 
       // =====================================
-      // TOTAL
-      // =====================================
+// SHIPPING
+// =====================================
+//
+// Free shipping on orders of Rs 5,000 or more.
+// Otherwise shipping is Rs 200.
+//
 
-      const total =
-        subtotal +
-        FLAT_SHIPPING_FEE;
+const shippingFee =
+  subtotal >= 5000
+    ? 0
+    : FLAT_SHIPPING_FEE;
+
+// =====================================
+// TOTAL
+// =====================================
+
+const total =
+  subtotal +
+  shippingFee;
+
 
       // =====================================
       // CREATE ORDER
@@ -303,7 +317,7 @@ export const createCodOrder =
           subtotal,
 
           shippingFee:
-            FLAT_SHIPPING_FEE,
+  shippingFee,
 
           total,
 
