@@ -106,7 +106,6 @@ const heroImage = () => {
         <div class="category-overlay"></div>
 
         <div class="category-content">
-          <p>01 · Women</p>
           <h3>
             Women's<br />
             Collection
@@ -122,7 +121,6 @@ const heroImage = () => {
         <div class="category-overlay"></div>
 
         <div class="category-content">
-          <p>02 · Girls</p>
           <h3>
             Little<br />
             Threads
